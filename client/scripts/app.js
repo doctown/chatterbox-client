@@ -1,4 +1,5 @@
-// YOUR CODE HERE:
+//GLOBAL VARIABLES
+
 var app = {
   init: function() {},
   send: function (message) {
@@ -55,16 +56,28 @@ var app = {
   clearMessages: function() {
     $('#chats').empty();
   },
-
+  // Add one message to the DOM under chats
   addMessage: function(message) {
-    $('#chats').append(message);
+    var username = message.username;
+    // Clean messages from XSS attack
+    var cleanMessage = htmlEntities(stripTags(message.text));
+    // Create a DOM node under chats
+    // Create a div for the message with message class
+    var $chatMessage = $('<div class="message"></div>');
+    // Add the username and message in the div
+    // Add bold tag to username
+    $chatMessage.append('<strong>' + username + '</strong>:');
+    $chatMessage.append('<br />' + cleanMessage);
+    // Appende message to chats
+    $('#chats').append($chatMessage);
   },
 
   addRoom: function() {
-
-  }
+    
+  }, 
+  // Stores rooms added to app
+  rooms: []
 };
-
 
 // HELPER FUNCTIONS
 // Strips html from a text and replace it with generic html to be rendered as text
@@ -89,11 +102,11 @@ var stripTags = function(input, allowed) {
 };
 
 
-// var message = {
-//   username: 'shawndrost',
-//   text: 'trololo',
-//   roomname: '4chan'
-// };
+var message = {
+  username: 'shawndrost',
+  text: 'trololo',
+  roomname: '4chan'
+};
 
 
 // fetchData();
