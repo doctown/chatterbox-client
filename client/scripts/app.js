@@ -73,6 +73,7 @@ var app = {
   },
   // Add a room to the list of available rooms on the chat page
   addRoom: function(roomName) {
+    // TODO: See if the room name might have XSS vulnerability
     // use jQuery to create an option for the room name 
     // Append the option to #roomSelect
     $('#roomSelect')
@@ -80,8 +81,6 @@ var app = {
     .attr('value', roomName)
     .text(roomName));
   }, 
-  // Stores rooms added to app
-  rooms: []
 };
 
 // HELPER FUNCTIONS
