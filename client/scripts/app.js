@@ -71,9 +71,14 @@ var app = {
     // Appende message to chats
     $('#chats').append($chatMessage);
   },
-
-  addRoom: function() {
-    
+  // Add a room to the list of available rooms on the chat page
+  addRoom: function(roomName) {
+    // use jQuery to create an option for the room name 
+    // Append the option to #roomSelect
+    $('#roomSelect')
+    .append($('<option></option>')
+    .attr('value', roomName)
+    .text(roomName));
   }, 
   // Stores rooms added to app
   rooms: []
