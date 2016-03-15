@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  var username = 'anonymous';
   // Handle events from clicking username
   $('#chats').on('click', '.username', function () {
     app.addFriend($(this).text());
@@ -9,11 +10,15 @@ $(document).ready(function() {
     e.preventDefault();
     // Create a message
     var message = {
-      username: 'temp',
+      username: username,
       text: $(this).find('#message').val(),
       roomname: 'temp'// get current room name
     };
     app.handleSubmit(message);
+  });
+
+  $('#user').on('click', 'button', function() {
+    username = $(this).siblings('#user-input').val();
   });
 });
 
