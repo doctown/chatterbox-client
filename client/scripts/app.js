@@ -1,5 +1,11 @@
 //GLOBAL VARIABLES
+$(document).ready(function() {
 
+  $('#chats').on('click', '.username', function () {
+    app.addFriend($(this).text());
+  });
+
+});
 var app = {
   init: function() {},
   send: function (message) {
@@ -63,11 +69,17 @@ var app = {
     var cleanMessage = htmlEntities(stripTags(message.text));
     // Create a DOM node under chats
     // Create a div for the message with message class
-    var $chatMessage = $('<div class="message"></div>');
+    var $chatMessage = $('<div class="chat-message"></div>');
     // Add the username and message in the div
     // Add bold tag to username
-    $chatMessage.append('<strong>' + username + '</strong>:');
-    $chatMessage.append('<br />' + cleanMessage);
+    $chatMessage.append('<span class="username ' + username + '">' + username + '</span>:'); 
+    //check if userName is in friend list
+    //if in list, add friend Class to message  
+    if (app.friends.indexOf(username) !== -1) {
+      $chatMessage.append('<span class="message friend ' + username + '"> <br />' + cleanMessage + '</span>');
+    } else {
+      $chatMessage.append('<span class="message ' + username + '"> <br />' + cleanMessage + '</span>');
+    }
     // Appende message to chats
     $('#chats').append($chatMessage);
   },
@@ -81,6 +93,18 @@ var app = {
     .attr('value', roomName)
     .text(roomName));
   }, 
+
+  //adds a friend class to all friends messages
+  addFriend: function(friendName) {
+
+    //add friend to friend array.
+    app.friends.push(friendName);
+    //find all friend's messages and add friend Class
+
+    $('.' + friendName + '.message').addClass('friend');
+  },
+
+  friends: []
 };
 
 // HELPER FUNCTIONS
