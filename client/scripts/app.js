@@ -1,10 +1,21 @@
 //GLOBAL VARIABLES
 $(document).ready(function() {
 
+  // Handle events from clicking username
   $('#chats').on('click', '.username', function () {
     app.addFriend($(this).text());
   });
 
+  // Handle events from submit button and adds text to page
+  $('#main').on('click', '#send', function() {
+    // Create a message
+    var message = {
+      username: 'temp',
+      text: $(this).siblings('#message').val(),
+      roomname: 'temp'// get current room name
+    };
+    app.handleSubmit(message);
+  });
 });
 var app = {
   init: function() {},
@@ -104,7 +115,11 @@ var app = {
     $('.' + friendName + '.message').addClass('friend');
   },
 
-  friends: []
+  friends: [],
+  // Add message to the chat room
+  handleSubmit: function(message) {
+    app.addMessage(message);
+  }
 };
 
 // HELPER FUNCTIONS
