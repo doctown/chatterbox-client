@@ -1,5 +1,4 @@
 // Variables
-var parseServerURL = 'https://api.parse.com/1/classes/messages';
 
 
 var app = {
@@ -9,7 +8,7 @@ var app = {
   send: function (message) {
     $.ajax({
       // This is the url you should use to communicate with the parse API server.
-      url: parseServerURL,
+      url: app.server,
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -23,7 +22,7 @@ var app = {
     });
   }, // send info to server
   fetch: function() {
-   /* $.ajax({
+    $.ajax({
       url: parseServerURL,
       contentType:'application/json',
       type: 'GET',
@@ -32,11 +31,12 @@ var app = {
         console.log(cleanedData);
       },
       dataType: 'application/json'
-    });*/
+    });
     $.get(parseServerURL, function(data) {
       console.log(data);
     });
-  }// get data from server
+  }, // get data from server
+  server: 'https://api.parse.com/1/classes/messages'
 };
 // Display messages retrieved from  parse server
 
