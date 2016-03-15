@@ -7,16 +7,18 @@ $(document).ready(function() {
   });
 
   // Handle events from submit button and adds text to page
-  $('#main').on('click', '#send', function() {
+  $('#send').submit( function(e) {
+    e.preventDefault();
     // Create a message
     var message = {
       username: 'temp',
-      text: $(this).siblings('#message').val(),
+      text: $(this).find('#message').val(),
       roomname: 'temp'// get current room name
     };
     app.handleSubmit(message);
   });
 });
+
 var app = {
   init: function() {},
   send: function (message) {
@@ -46,19 +48,16 @@ var app = {
       contentType: 'application/json',
       success: function (data, status) {
 
-        var result = '';
-
+//        var result = JSON.parse(data);
+          console.log(data);
         for (var i = 0; i < data.results.length; i++) {
-
         //   var user = data.results[i].username;
 
         //   var $user = $('<div class="chat" id = "' + user + '"></div>');
         //   var msg = $tweet.text('@' + user + ': on   ' + tweet.created_at + '\n'+ tweet.message);
         // msg.html(msg.html().replace(/\n/g,'<br/>'));
-
-          $('#chats').append(data.results[i].text);
+          app.addMessage(data.results[i]);
         }
-        console.log(data);
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -118,6 +117,7 @@ var app = {
   friends: [],
   // Add message to the chat room
   handleSubmit: function(message) {
+    // app.send(message);
     app.addMessage(message);
   }
 };
@@ -126,12 +126,20 @@ var app = {
 // Strips html from a text and replace it with generic html to be rendered as text
 // Help protect against XSS attacks
 var htmlEntities = function (str) {
+  if (str === undefined) {
+    return;
+  }
+  
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
 
 // Strips HTML tags from text
 // Credits: https://github.com/kvz/phpjs/blob/master/functions/strings/strip_tags.js
 var stripTags = function(input, allowed) {
+  if (input === undefined) {
+    return;
+  }
+
   allowed = (((allowed || '') + '')
     .toLowerCase()
     .match(/<[a-z][a-z0-9]*>/g) || [])
@@ -143,7 +151,6 @@ var stripTags = function(input, allowed) {
       return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
     });
 };
-
 
 var message = {
   username: 'shawndrost',
