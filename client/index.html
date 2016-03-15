@@ -15,11 +15,26 @@
   </head>
   <body>
     <div id="main">
+      <nav class="menu">
+        <ul>
+          <li class="username-chage">Change username</li>
+          <li class="room-add">Add new chatroom</li>
+        </ul>
+      </nav>
+      
       <h1>chatterbox</h1>
-      <form id="user" action="">Username:
-        <input id="user-input" type="text" value="Enter a username"></input>
-        <button class="submit-username" type="button">Submit</button>
-      </form>
+      <!-- Allow user tabs for chat rooms -->
+      <div class="tabs">
+        <ul class="tab-links">
+          <li class="main active"><a href="#main">Main</a></li>
+        </ul>
+      </div>
+      <!-- Move username change to menu
+        <form id="user" action="">Username:
+          <input id="user-input" type="text" value="Enter a username"></input>
+          <button class="submit-username" type="button">Submit</button>
+        </form> 
+      -->
       <form action="#"> Room:
         <select id="roomSelect" name="roomSelect">
         <option value="main">main</option>
