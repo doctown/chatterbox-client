@@ -1,6 +1,4 @@
-//GLOBAL VARIABLES
 $(document).ready(function() {
-
   // Handle events from clicking username
   $('#chats').on('click', '.username', function () {
     app.addFriend($(this).text());
@@ -30,7 +28,6 @@ var app = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
-        console.log('chatterbox: Message sent');
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -47,15 +44,7 @@ var app = {
       dataTye: 'json',
       contentType: 'application/json',
       success: function (data, status) {
-
-//        var result = JSON.parse(data);
-          console.log(data);
         for (var i = 0; i < data.results.length; i++) {
-        //   var user = data.results[i].username;
-
-        //   var $user = $('<div class="chat" id = "' + user + '"></div>');
-        //   var msg = $tweet.text('@' + user + ': on   ' + tweet.created_at + '\n'+ tweet.message);
-        // msg.html(msg.html().replace(/\n/g,'<br/>'));
           app.addMessage(data.results[i]);
         }
       },
@@ -68,7 +57,7 @@ var app = {
   },
 
   server: 'https://api.parse.com/1/classes/messages',
-
+  
   clearMessages: function() {
     $('#chats').empty();
   },
@@ -118,7 +107,10 @@ var app = {
   // Add message to the chat room
   handleSubmit: function(message) {
     // app.send(message);
-    app.addMessage(message);
+    //app.addMessage(message);
+    // Send message to the server
+    app.send(message);
+    // TODO: Sanitize text before sending to server
   }
 };
 
@@ -129,7 +121,7 @@ var htmlEntities = function (str) {
   if (str === undefined) {
     return;
   }
-  
+
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
 
@@ -152,12 +144,13 @@ var stripTags = function(input, allowed) {
     });
 };
 
-var message = {
-  username: 'shawndrost',
-  text: 'trololo',
-  roomname: '4chan'
+//create a function to automate messages
+var automateMessages = function() {
+  //clear messages
+  //invoke app.fetch - > fetch messages from server
+  app.clearMessages();
+  app.fetch();
 };
 
-
-// fetchData();
-
+automateMessages();
+setInterval(automateMessages, 10000);
