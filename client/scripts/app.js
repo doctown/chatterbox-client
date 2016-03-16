@@ -1,58 +1,67 @@
-$(document).ready(function() {
-  var username = 'anonymous';
-  // Handle events from clicking username
-  $('#chats').on('click', '.username', function () {
-    app.addFriend($(this).text());
-  });
-
-  // Handle events from submit button and adds text to page
-  $('#send').submit( function(e) {
-    e.preventDefault();
-    // Create a message
-    var message = {
-      username: username,
-      text: $(this).find('#message').val(),
-      roomname: 'temp'// get current room name
-    };
-    app.handleSubmit(message);
-  });
-
-  // Handle event on username change
-  $('#user').on('click', 'button', function() {
-    username = $(this).siblings('#user-input').val();
-  });
-
-  // Handle click on add new chatroom
-  $('#main').on('click', '.room-add', function() {
-    var newRoomName = prompt('Enter new room');
-    // TODO: Sanitize input
-    app.addRoom(newRoomName);
-  });
-
-  // When a room is selected, create tab for room
-  $('#roomSelect').change(function() {
-    // Get the room selected
-    var roomName = $(this).val();
-    // Create html list element for room tab and add room name as the class
-    var $newRoomTab = $('<li></li>');
-    $newRoomTab.addClass(roomName);
-    $newRoomTab.text(roomName);
-    // Add active class and remove from siblings active class
-    $newRoomTab.addClass('active');
-    $('.tabs .tab-links').children().removeClass('active');
-    // Append new tab to tabs area
-    $('.tabs .tab-links').append($newRoomTab);
-  });
-
-  // Click on tab and creates room content on page
-  $('.tabs .tab-links').on('click', 'li', function() {
-    var roomName = $(this).text();
-    
-  });
-});
-
 var app = {
-  init: function() {},
+  server: 'https://api.parse.com/1/classes/messages',
+  friends: [],
+  username: window.location.search.split('username=')[1],
+  roomname: 'lobby',
+
+  init: function() {
+    // Handle events from clicking username
+    $('#main').on('click', '.username', function () {
+      app.addFriend($(this).text());
+    });
+
+    // Handle events from submit button and adds text to page
+    $('#send').submit( function(e) {
+      e.preventDefault();
+      // Create a message
+      var message = {
+        username: app.username,
+        text: $(this).find('#message').val(),
+        roomname: app.roomname// get current room name
+      };
+      app.handleSubmit(message);
+    });
+
+    // Handle event on username change
+    $('#user').on('click', 'button', function() {
+      app.username = $(this).siblings('#user-input').val();
+    });
+
+    // Handle click on add new chatroom
+    $('#main').on('click', '.room-add', function() {
+      var newRoomName = prompt('Enter new room');
+      // TODO: Sanitize input
+      app.addRoom(newRoomName);
+    });
+
+    // When a room is selected, create tab for room
+    $('#roomSelect').change(function() {
+      // Get the room selected
+      var roomName = $(this).val();
+      app.roomnname = roomName;
+      // Create html list element for room tab and add room name as the class
+      var $newRoomTab = $('<li></li>');
+      $newRoomTab.addClass(roomName);
+      $newRoomTab.text(roomName);
+      // Add active class and remove from siblings active class
+      $newRoomTab.addClass('active');
+      $('.tabs .tab-links').children().removeClass('active');
+      // Append new tab to tabs area
+      $('.tabs .tab-links').append($newRoomTab);
+    });
+
+    // Click on tab and creates room content on page
+    $('.tabs .tab-links').on('click', 'li', function() {
+      var roomName = $(this).text();
+      app.clearMessages();
+      app.fetchRoom(roomName);
+    });
+
+    app.setupRooms();
+
+    // Initialize room
+    //automateMessages();
+  },
   send: function (message) {
 
     $.ajax({
@@ -91,7 +100,33 @@ var app = {
 
   },
 
-  server: 'https://api.parse.com/1/classes/messages',
+  fetchRoom: function (roomName) {
+    // body...
+    $.ajax({
+      // This is the url you should use to communicate with the parse API server.
+      url: app.server,
+      type: 'GET',
+      dataTye: 'json',
+      contentType: 'application/json',
+      data: {
+        'where': {
+          'roomname': roomName
+        }
+      },
+      success: function (data, status) {
+        // TODO: Sanitize all data received from Parse
+        for (var i = 0; i < data.results.length; i++) {
+          app.addMessage(data.results[i]);
+        }
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('chatterbox: Failed to fetch message', data);
+      }
+    });
+
+  },
+
   
   clearMessages: function() {
     $('#chats').empty();
@@ -117,6 +152,31 @@ var app = {
     // Appende message to chats
     $('#chats').append($chatMessage);
   },
+
+  setupRooms: function() {
+    $.ajax({
+      // This is the url you should use to communicate with the parse API server.
+      url: app.server,
+      type: 'GET',
+      dataTye: 'json',
+      contentType: 'application/json',
+      success: function (data, status) {
+        var rooms = {};
+        // TODO: Sanitize all data received from Parse
+        for (var i = 0; i < data.results.length; i++) {
+          var roomName = htmlEntities(stripTags(data.results[i].roomname));
+          rooms[roomName] = roomName;
+        }
+        for (var key in rooms) {
+          app.addRoom(rooms[key]);
+        }
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('chatterbox: Failed to fetch message', data);
+      }
+    });
+  },
   // Add a room to the list of available rooms on the chat page
   addRoom: function(roomName) {
     // TODO: See if the room name might have XSS vulnerability
@@ -138,11 +198,8 @@ var app = {
     $('.' + friendName + '.message').addClass('friend');
   },
 
-  friends: [],
   // Add message to the chat room
   handleSubmit: function(message) {
-    // app.send(message);
-    //app.addMessage(message);
     // Send message to the server
     app.send(message);
     // TODO: Sanitize text before sending to server
@@ -181,11 +238,8 @@ var stripTags = function(input, allowed) {
 
 //create a function to automate messages
 var automateMessages = function() {
-  //clear messages
-  //invoke app.fetch - > fetch messages from server
   app.clearMessages();
-  app.fetch();
+  app.fetchRoom(app.roomname);
 };
-
-automateMessages();
-setInterval(automateMessages, 10000);
+// Temporary disable
+//setInterval(automateMessages, 10000);

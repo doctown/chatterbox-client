@@ -26,7 +26,7 @@
       <!-- Allow user tabs for chat rooms -->
       <div class="tabs">
         <ul class="tab-links">
-          <li class="main active"><a href="#main">Main</a></li>
+          <li class="main active"><a href="#main">main</a></li>
         </ul>
       </div>
       <!-- Move username change to menu
@@ -37,14 +37,19 @@
       -->
       <form action="#"> Room:
         <select id="roomSelect" name="roomSelect">
-        <option value="main">main</option>
+        <option value="main">lobby</option>
         </select>
       </form>
       <form id="send" action="#">Enter your message:
         <input id="message" type="text" name="message" />
         <button class="submit" type="submit">Submit</button>
       </form>
+      <div id="chats"></div>
+      <script type="text/javascript">
+        $(document).ready(function() {
+          app.init();
+        });
+      </script>
     </div>
-    <div id="chats"></div>
   </body>
 </html>
