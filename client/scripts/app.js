@@ -5,6 +5,8 @@ var app = {
   roomname: 'lobby',
 
   init: function() {
+    //call dropdown.js
+    $('dropdown-toggle').dropdown();
     // Handle events from clicking username
     $('#main').on('click', '.username', function () {
       app.addFriend($(this).text());
@@ -40,9 +42,9 @@ var app = {
       var roomName = $(this).val();
       app.roomnname = roomName;
       // Create html list element for room tab and add room name as the class
-      var $newRoomTab = $('<li></li>');
+      var $newRoomTab = $('<li role="presentation"></li>');
       $newRoomTab.addClass(roomName);
-      $newRoomTab.text(roomName);
+      $newRoomTab.html('<a href="#">' + roomName + '</a>');
       // Add active class and remove from siblings active class
       $newRoomTab.addClass('active');
       $('.tabs .tab-links').children().removeClass('active');
@@ -52,8 +54,11 @@ var app = {
 
     // Click on tab and creates room content on page
     $('.tabs .tab-links').on('click', 'li', function() {
+      $(this).siblings().removeClass('active');
+      $(this).addClass('active');
       var roomName = $(this).text();
       app.clearMessages();
+      $(this).fadeIn('slow');
       app.fetchRoom(roomName);
     });
 
@@ -138,18 +143,20 @@ var app = {
     var cleanMessage = htmlEntities(stripTags(message.text));
     // Create a DOM node under chats
     // Create a div for the message with message class
-    var $chatMessage = $('<div class="chat-message"></div>');
+    var $chatMessage = $('<div class="chat-message panel panel-primary"></div>');
+    var $panelBody = $('<div class="panel-body"></div>');
     // Add the username and message in the div
     // Add bold tag to username
-    $chatMessage.append('<span class="username ' + username + '">' + username + '</span>:'); 
+    $panelBody.append('<span class=" panel-heading username ' + username + '">' + username + '</span>:'); 
     //check if userName is in friend list
     //if in list, add friend Class to message  
     if (app.friends.indexOf(username) !== -1) {
-      $chatMessage.append('<span class="message friend ' + username + '"> <br />' + cleanMessage + '</span>');
+      $panelBody.append('<span class="message friend ' + username + '"> <br />' + cleanMessage + '</span>');
     } else {
-      $chatMessage.append('<span class="message ' + username + '"> <br />' + cleanMessage + '</span>');
+      $panelBody.append('<span class="message ' + username + '"> <br />' + cleanMessage + '</span>');
     }
     // Appende message to chats
+    $chatMessage.append($panelBody);
     $('#chats').append($chatMessage);
   },
 
